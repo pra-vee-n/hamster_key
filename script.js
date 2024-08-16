@@ -29,10 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
             promoId: 'dc128d28-c45b-411c-98ff-ac7726fbaea4',
         },
         6: {
-            name: 'Twerk Race 3D',
-            appToken: '61308365-9d16-4040-8bb0-2f4a4c69074c',
-            promoId: '61308365-9d16-4040-8bb0-2f4a4c69074c'
-        };
+    name: 'Twerk Race 3D',
+    appToken: '61308365-9d16-4040-8bb0-2f4a4c69074c',
+    promoId: '61308365-9d16-4040-8bb0-2f4a4c69074c'
+        }
+    };
 
     const startBtn = document.getElementById('startBtn');
     const keyCountSelect = document.getElementById('keyCountSelect');
@@ -47,6 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const generatedKeysTitle = document.getElementById('generatedKeysTitle');
     const gameSelect = document.getElementById('gameSelect');
     const copyStatus = document.getElementById('copyStatus');
+    const previousKeysContainer = document.getElementById('previousKeysContainer');
+    const previousKeysList = document.getElementById('previousKeysList');
     const telegramChannelBtn = document.getElementById('telegramChannelBtn');
 
     const initializeLocalStorage = () => {
@@ -55,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const storageKey = `keys_generated_${game.name}`;
             const storedData = JSON.parse(localStorage.getItem(storageKey));
             if (!storedData || storedData.date !== now) {
-                localStorage.setItem(storageKey, JSON.stringify({ date: now, count: 0 }));
+                localStorage.setItem(storageKey, JSON.stringify({ date: now, count: 0, keys: [] }));
             }
         });
     };
@@ -151,7 +154,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const storedData = JSON.parse(localStorage.getItem(storageKey));
 
         if (storedData.count + keyCount > MAX_KEYS_PER_GAME_PER_DAY) {
-            alert(`You can generate only ${MAX_KEYS_PER_GAME_PER_DAY - storedData.count} more keys for ${game.name} today. Please contact us on Telegram for more keys.`);
+            alert(`You can generate only ${MAX_KEYS_PER_GAME_PER_DAY - storedData.count} more keys for ${game.name} today.`);
+            previousKeysList.innerHTML = storedData.keys.map(key =>
+                `<div class="key-item">
+                    <input type="text" value="${key}" readonly>
+                </div>`
+            ).join('');
+            previousKeysContainer.classList.remove('hidden');
             return;
         }
 
@@ -159,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         progressBar.style.width = '0%';
         progressText.innerText = '0%';
-        progressLog.innerText = 'Starting...';
+        progressLog.innerText = 'Starting... \n Please wait It may take upto 1 min to Login';
         progressContainer.classList.remove('hidden');
         keyContainer.classList.add('hidden');
         generatedKeysTitle.classList.add('hidden');
@@ -226,7 +235,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`;
         }
 
-        storedData.count += keyCount;
+        storedData.count += keys.filter(key => key).length;
+        storedData.keys.push(...keys.filter(key => key));
         localStorage.setItem(storageKey, JSON.stringify(storedData));
 
         keyContainer.classList.remove('hidden');
@@ -235,39 +245,32 @@ document.addEventListener('DOMContentLoaded', () => {
             button.addEventListener('click', (event) => {
                 const key = event.target.getAttribute('data-key');
                 navigator.clipboard.writeText(key).then(() => {
-                    copyStatus.classList.remove('hidden');
-                    setTimeout(() => copyStatus.classList.add('hidden'), 2000);
+                    copyStatus.innerText = `Copied ${key}`;
+                    setTimeout(() => {
+                        copyStatus.innerText = '';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Could not copy text: ', err);
                 });
             });
         });
-        copyAllBtn.addEventListener('click', () => {
-            const keysText = keys.filter(key => key).join('\n');
-            navigator.clipboard.writeText(keysText).then(() => {
-                copyStatus.classList.remove('hidden');
-                setTimeout(() => copyStatus.classList.add('hidden'), 2000);
-            });
-        });
 
-        progressBar.style.width = '100%';
-        progressText.innerText = '100%';
-        progressLog.innerText = 'Complete';
-
-        startBtn.classList.remove('hidden');
+        startBtn.disabled = false;
         keyCountSelect.classList.remove('hidden');
         gameSelect.classList.remove('hidden');
-        startBtn.disabled = false;
+        startBtn.classList.remove('hidden');
     });
 
-    document.getElementById('generateMoreBtn').addEventListener('click', () => {
-        progressContainer.classList.add('hidden');
-        keyContainer.classList.add('hidden');
-        startBtn.classList.remove('hidden');
-        keyCountSelect.classList.remove('hidden');
-        gameSelect.classList.remove('hidden');
-        generatedKeysTitle.classList.add('hidden');
-        copyAllBtn.classList.add('hidden');
-        keysList.innerHTML = '';
-        keyCountLabel.innerText = 'Number of keys:';
+    copyAllBtn.addEventListener('click', () => {
+        const allKeys = Array.from(document.querySelectorAll('.key-item input')).map(input => input.value).join('\n');
+        navigator.clipboard.writeText(allKeys).then(() => {
+            copyStatus.innerText = 'All keys copied';
+            setTimeout(() => {
+                copyStatus.innerText = '';
+            }, 2000);
+        }).catch(err => {
+            console.error('Could not copy text: ', err);
+        });
     });
 
     document.getElementById('creatorChannelBtn').addEventListener('click', () => {
