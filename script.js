@@ -51,9 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const sourceCode = document.getElementById('sourceCode');
     const gameSelectGroup = document.getElementById('gameSelectGroup');
     const keyCountGroup = document.getElementById('keyCountGroup');
-    const previousKeysContainer = document.getElementById('previousKeysContainer');
-    const previousKeysList = document.getElementById('previousKeysList');
-    const telegramChannelBtn = document.getElementById('telegramChannelBtn');
 
     startBtn.addEventListener('click', async () => {
         const gameChoice = parseInt(gameSelect.value);
@@ -239,14 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     sourceCode.addEventListener('click', () => {
         window.open('https://t.me/praveenkumar_26', '_blank');
-    });
-
-        document.getElementById('creatorChannelBtn').addEventListener('click', () => {
-        window.open('https://telegram.me/praveenkumar_26', '_blank');
-    });
-
-    telegramChannelBtn.addEventListener('click', () => {
-        window.open('https://telegram.me/good_morning_wish', '_blank');
     });
 
     const generateClientId = () => {
