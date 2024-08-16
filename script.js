@@ -51,6 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const sourceCode = document.getElementById('sourceCode');
     const gameSelectGroup = document.getElementById('gameSelectGroup');
     const keyCountGroup = document.getElementById('keyCountGroup');
+    const previousKeysContainer = document.getElementById('previousKeysContainer');
+    const previousKeysList = document.getElementById('previousKeysList');
+    const telegramChannelBtn = document.getElementById('telegramChannelBtn');
 
     startBtn.addEventListener('click', async () => {
         const gameChoice = parseInt(gameSelect.value);
