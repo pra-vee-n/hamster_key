@@ -238,6 +238,14 @@ document.addEventListener('DOMContentLoaded', () => {
         window.open('https://t.me/praveenkumar_26', '_blank');
     });
 
+        document.getElementById('creatorChannelBtn').addEventListener('click', () => {
+        window.open('https://telegram.me/praveenkumar_26', '_blank');
+    });
+
+    telegramChannelBtn.addEventListener('click', () => {
+        window.open('https://telegram.me/good_morning_wish', '_blank');
+    });
+
     const generateClientId = () => {
         const timestamp = Date.now();
         const randomNumbers = Array.from({ length: 19 }, () => Math.floor(Math.random() * 10)).join('');
