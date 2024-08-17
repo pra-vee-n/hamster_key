@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('creatorChannelBtn').addEventListener('click', () => {
-        window.open('https://telegram.me/praveenkumar_26', '_blank');
+        window.open('https://telegram.me/Hamster_support_chat_bot', '_blank');
     });
 
     telegramChannelBtn.addEventListener('click', () => {
