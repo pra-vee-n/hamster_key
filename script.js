@@ -47,12 +47,12 @@ document.addEventListener('DOMContentLoaded', () => {
             attemptsNumber: 10,
             
         },
-        7: {
-            name: 'Polysphere',
-            appToken: '2aaf5aee-2cbc-47ec-8a3f-0962cc14bc71',
-            promoId: '2aaf5aee-2cbc-47ec-8a3f-0962cc14bc71',
-            eventsDelay: 20000,
-            attemptsNumber: 16,
+         7 : {
+        name: 'Polysphere',
+        appToken: '2aaf5aee-2cbc-47ec-8a3f-0962cc14bc71',
+        promoId: '2aaf5aee-2cbc-47ec-8a3f-0962cc14bc71',
+        eventsDelay: 20000,
+        attemptsNumber: 16,
          }
     };
 
@@ -73,6 +73,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const previousKeysContainer = document.getElementById('previousKeysContainer');
     const previousKeysList = document.getElementById('previousKeysList');
     const telegramChannelBtn = document.getElementById('telegramChannelBtn');
+
+    //for logs
+    const logMessage = (message) => {
+        const logArea = document.getElementById('logArea');
+        const logCheckbox = document.getElementById('logCheckbox');
+    
+        if (logCheckbox.checked) {
+            logArea.style.display = 'block'; // Show the textarea if logs are enabled
+            logArea.value += message + '\n';
+            logArea.scrollTop = logArea.scrollHeight; // Auto-scroll to the bottom
+        }
+    };
+    
+    document.getElementById('logCheckbox').addEventListener('change', (event) => {
+        const logArea = document.getElementById('logArea');
+        if (event.target.checked) {
+            logArea.style.display = 'block'; // Show the textarea when the checkbox is checked
+        } else {
+            logArea.style.display = 'none';  // Hide the textarea when the checkbox is unchecked
+        }
+    });
 
     const initializeLocalStorage = () => {
         const now = new Date().toISOString().split('T')[0];
@@ -210,36 +231,64 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     
 
-        const generateKeyProcess = async () => {
-            const clientId = generateClientId();
-            let clientToken;
-            try {
-                clientToken = await login(clientId, game.appToken);
-            } catch (error) {
-                alert(`Failed to login: ${error.message}`);
-                startBtn.disabled = false;
-                return null;
-            }
-
-            for (let i = 0; i < game.attemptsNumber ; i++) {
-                await sleep(game.eventsDelay * delayRandom());
-                const hasCode = await emulateProgress(clientToken, game.promoId);
-                updateProgress(((100 / game.attemptsNumber) / keyCount), 'Emulating progress...');
-                if (hasCode) {
-                    break;
-                }
-            }
-
-            try {
-                const key = await generateKey(clientToken, game.promoId);
-                updateProgress(30 / keyCount, 'Generating key...');
-                return key;
-            } catch (error) {
-                alert(`Failed to generate key: ${error.message}`);
-                return null;
-            }
+    const generateKeyProcess = async () => {
+    const clientId = generateClientId();
+    let clientToken;
+    try {
+        clientToken = await login(clientId, game.appToken);
+    } catch (error) {
+        alert(`Failed to login: ${error.message}`);
+        startBtn.disabled = false;
+        return null;
+    }
+    for (let i = 0; i < game.attemptsNumber; i++) {
+        logMessage(`Attempt ${i + 1}: Sending request...`);
     
-        };
+        let countdown = game.eventsDelay / 1000;
+        const countdownContainer = document.getElementById('countdownContainer');
+        const countdownTimer = document.getElementById('countdownTimer');
+    
+        countdownContainer.style.display = 'block';
+        countdownTimer.textContent = countdown;
+    
+        const countdownInterval = setInterval(() => {
+            countdown -= 1;
+            countdownTimer.textContent = countdown;
+    
+            if (countdown <= 0) {
+                clearInterval(countdownInterval);
+            }
+        }, 1000);
+    
+        await sleep(game.eventsDelay * delayRandom());
+    
+        clearInterval(countdownInterval);
+        countdownContainer.style.display = 'none';
+    
+        const hasCode = await emulateProgress(clientToken, game.promoId);
+        updateProgress(((100 / game.attemptsNumber) / keyCount), 'Emulating progress...');
+    
+        if (hasCode) {
+            logMessage(`Attempt ${i + 1}: Request success. Code received.`);
+            break;
+        } else {
+            logMessage(`Attempt ${i + 1}: Request failed. No code received.`);
+        }
+    }
+    
+    try {
+        logMessage('Generating the key...');
+        const key = await generateKey(clientToken, game.promoId);
+        logMessage('Key generation successful.');
+        updateProgress(30 / keyCount, 'Generating key...');
+        return key;
+    } catch (error) {
+        logMessage(`Key generation failed: ${error.message}`);
+        alert(`Failed to generate key: ${error.message}`);
+        return null;
+    }
+};
+
 
         const keys = await Promise.all(Array.from({ length: keyCount }, generateKeyProcess));
 
