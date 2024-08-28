@@ -3,6 +3,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const MAX_KEYS_PER_GAME_PER_DAY = 10;
     //const EVENTS_DELAY = 20000;
 
+    // Automatically open the popup when the page loads
+    window.onload = function() {
+        const overlay = document.getElementById("myOverlay");
+        if (!localStorage.getItem("popupShown")) {
+            overlay.style.display = "block";
+            localStorage.setItem("popupShown", "true");
+        }
+    };
+
+    // Close the popup after opening the link
+    document.querySelector(".popup a").addEventListener("click", function(event) {
+        //event.preventDefault(); // Prevent the link from navigating
+        const overlay = document.getElementById("myOverlay");
+        overlay.style.display = "none";
+    });
+
     const games = {
         1: {
             name: 'Riding Extreme 3D',
