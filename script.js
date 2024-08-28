@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     telegramChannelBtn.addEventListener('click', () => {
-        window.open('https://telegram.me/Buisness_idea_BuisnessIdea', '_blank');
+        window.open('https://t.me/+vVyb3c94gEUzM2Fl', '_blank');
     });
 
     document.getElementById('ShowKeysBtn').addEventListener('click', () => {
