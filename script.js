@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             attemptsNumber: 30,
         },
         16: {
-            name: 'AmongWater'
+            name: 'Among Water',
             appToken: 'daab8f83-8ea2-4ad0-8dd5-d33363129640',
             promoId: 'daab8f83-8ea2-4ad0-8dd5-d33363129640',
             eventsDelay: 20000,
